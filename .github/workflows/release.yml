@@ -58,17 +58,13 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Change Version
-        run: |
-          mvn versions:set -DnewVersion=${GITHUB_REF#refs/tags/} -DgenerateBackupPoms=false
-          echo "Version set to ${GITHUB_REF#refs/tags/}"
-
       - name: Build and Test
         run: mvn clean verify -Pci
 
       - name: Deploy to Maven Central
         run: |
-          mvn clean deploy -P deploy,release -DskipTests
+          # mvn clean deploy -P deploy,release -DskipTests
+          bin/release/maven-deploy.sh
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
