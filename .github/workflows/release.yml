@@ -39,16 +39,16 @@ jobs:
       - name: Check settings.xml
         run: |
           # Will remove the sensitive information from the output
-          cat ~/.m2/settings.xml
+          cat ${{ github.workspace }}/.m2/settings.xml
           echo
           echo "Validating settings.xml configuration..."
           # Check if settings.xml is correctly configured (without exposing contents)
-          if ! grep -q "<id>ossrh</id>" ~/.m2/settings.xml; then
+          if ! grep -q "<id>ossrh</id>" ${{ github.workspace }}/.m2/settings.xml; then
             echo "settings.xml is not configured correctly for Sonatype OSSRH."
             exit 1
           fi
           # Check if GPG configuration exists (using extended regex for any passphrase content)
-          if ! grep -E "<passphrase>.+</passphrase>" ~/.m2/settings.xml; then
+          if ! grep -E "<passphrase>.+</passphrase>" ${{ github.workspace }}/.m2/settings.xml; then
             echo "settings.xml is not configured correctly for gpg-passphrase."
             exit 1
           fi
