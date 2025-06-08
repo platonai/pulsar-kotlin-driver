@@ -41,18 +41,18 @@ open class Driver(
     var timeout = Duration.ofSeconds(120)
 
     private val contextPath0 = contextPath.replace("/+".toRegex(), "").takeIf { it.isNotBlank() } ?: ""
-    private val contextBase = "http://$server:$port/$contextPath0".removeSuffix("/")
-    val scrapeBaseUri = "$contextBase/x/a"
-    val scrapeApi = "$scrapeBaseUri/q"
-    val statusApi = "$scrapeBaseUri/status"
-    val statusesApi = "$scrapeBaseUri/statuses"
+    private val apiBaseUrl = "http://$server:$port/$contextPath0".removeSuffix("/") + "/api"
+    val scrapeBaseUrl = "$apiBaseUrl/x/a"
+    val scrapeApi = "$scrapeBaseUrl/q"
+    val statusApi = "$scrapeBaseUrl/status"
+    val statusesApi = "$scrapeBaseUrl/statuses"
 
-    val userBaseUri = "$contextBase/users/$authToken"
+    val userBaseUri = "$apiBaseUrl/users/$authToken"
     val dashboardApi = "$userBaseUri/dashboard"
     val countApi = "$userBaseUri/count"
     val fetchApi = "$userBaseUri/fetch"
     val downloadApi = "$userBaseUri/download"
-    val statusQueryApi = "$scrapeBaseUri/status/q"
+    val statusQueryApi = "$scrapeBaseUrl/status/q"
 
     private val httpClient = HttpClient.newHttpClient()
 
