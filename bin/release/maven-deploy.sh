@@ -57,13 +57,13 @@ echo "$VERSION" > "$APP_HOME"/VERSION
 find "$APP_HOME" -name 'pom.xml' -exec sed -i "s/$SNAPSHOT_VERSION/$VERSION/" {} \;
 
 if $CLEAN; then
-  ./mvnw clean -Pall-modules
+  ./mvnw clean
 fi
 
 if $ENABLE_TEST; then
-  ./mvnw deploy -P platon-deploy,platon-release
+  ./mvnw deploy -P deploy,release
 else
-  ./mvnw deploy -P platon-deploy,platon-release -DskipTests
+  ./mvnw deploy -P deploy,release -DskipTests
 fi
 
 exitCode=$?

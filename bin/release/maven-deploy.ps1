@@ -57,16 +57,16 @@ $VERSION | Set-Content "$AppHome\VERSION"
 }
 
 if ($PerformClean) {
-  & $MvnCmd clean -Pall-modules
+  & $MvnCmd clean
   if ($LastExitCode -ne 0) {
     exit $LastExitCode
   }
 }
 
 if ($SkipTests) {
-  & $MvnCmd deploy -P platon-deploy,platon-release -DskipTests
+  & $MvnCmd deploy -P deploy,release -DskipTests
 } else {
-  & $MvnCmd deploy -P platon-deploy,platon-release
+  & $MvnCmd deploy -P deploy,release
 }
 
 $exitCode =$LastExitCode
