@@ -69,11 +69,6 @@ fi
 exitCode=$?
 [ $exitCode -eq 0 ] && echo "Build successfully" || exit 1
 
-# Build pulsar-app/pulsar-master but do not deploy the artifacts
-echo "Building pulsar-app/pulsar-master ..."
-cd "$APP_HOME/pulsar-app/pulsar-master" || exit
-./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true
-
 exitCode=$?
 [ $exitCode -eq 0 ] && echo "Build successfully" || exit 1
 
