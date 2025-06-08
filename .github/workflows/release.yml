@@ -64,7 +64,8 @@ jobs:
       - name: Deploy to Maven Central
         run: |
           # mvn clean deploy -P deploy,release -DskipTests
-          bin/release/maven-deploy.sh
+          find bin/ -name "*.sh" | xargs chmod +x
+          ./bin/release/maven-deploy.sh
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
