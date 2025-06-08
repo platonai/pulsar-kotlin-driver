@@ -20,7 +20,7 @@ jobs:
       - name: Correct Permissions
         run: |
           find bin/ -name "*.sh" | xargs chmod +x
-          chomd +x ./mvnw
+          chmod +x ./mvnw
 
       - name: Test Sonatype login via API
         run: |
