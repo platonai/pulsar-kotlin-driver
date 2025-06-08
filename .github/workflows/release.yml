@@ -34,14 +34,6 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-#      - name: Configure GPG Key
-#        env:
-#          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
-#          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-#        run: |
-#          echo -n "$GPG_SIGNING_KEY" | base64 --decode | gpg --import
-#          echo "GPG key imported successfully"
-
       - name: Change Version
         run: |
           mvn versions:set -DnewVersion=${GITHUB_REF#refs/tags/} -DgenerateBackupPoms=false
@@ -52,6 +44,7 @@ jobs:
 
       - name: Deploy to Maven Central
         env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           mvn clean deploy -Pdeploy \

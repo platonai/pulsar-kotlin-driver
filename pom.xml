@@ -581,7 +581,6 @@
                                 <arg>--compress-algo=2</arg>
                                 <arg>--pinentry-mode=loopback</arg>
                             </gpgArguments>
-                            <passphrase>${env.GPG_PASSPHRASE}</passphrase>
                         </configuration>
                         <executions>
                             <execution>
