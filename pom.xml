@@ -628,18 +628,18 @@
 
                     <!-- Nexus staging -->
                     <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>${nexus-staging-maven-plugin.version}</version>
-                        <configuration>
-                            <serverId>ossrh</serverId>
-                            <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>false</autoReleaseAfterClose>
-                            <stagingProgressTimeoutMinutes>15</stagingProgressTimeoutMinutes>
-                            <stagingProgressPauseDurationSeconds>10</stagingProgressPauseDurationSeconds>
-                        </configuration>
-                        <extensions>true</extensions>
-                    </plugin>
+                    <groupId>org.sonatype.plugins</groupId>
+                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <version>${nexus-staging-maven-plugin.version}</version>
+                    <configuration>
+                        <serverId>ossrh</serverId>
+                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                        <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                        <stagingProgressTimeoutMinutes>15</stagingProgressTimeoutMinutes>
+                        <stagingProgressPauseDurationSeconds>10</stagingProgressPauseDurationSeconds>
+                    </configuration>
+                    <extensions>true</extensions>
+                </plugin>
                 </plugins>
             </build>
         </profile>
