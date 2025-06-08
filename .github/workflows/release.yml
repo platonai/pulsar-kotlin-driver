@@ -36,6 +36,10 @@ jobs:
 
       - name: Check settings.xml
         run: |
+          # Will remove the sensitive information from the output
+          cat ~/.m2/settings.xml
+          echo
+          echo "Validating settings.xml configuration..."
           # Check if settings.xml is correctly configured (without exposing contents)
           if ! grep -q "<id>ossrh</id>" ~/.m2/settings.xml; then
             echo "settings.xml is not configured correctly for Sonatype OSSRH."
