@@ -29,6 +29,25 @@ jobs:
           gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
           cache: 'maven'
 
+      - name: Test Sonatype login via API
+        run: |
+          curl -u "${{ secrets.SONATYPE_USERNAME }}:${{ secrets.SONATYPE_PASSWORD }}" \
+          -X GET "https://oss.sonatype.org/service/local/status"
+
+      - name: Check settings.xml
+        run: |
+          # Check if settings.xml is correctly configured (without exposing contents)
+          if ! grep -q "<id>ossrh</id>" ~/.m2/settings.xml; then
+            echo "settings.xml is not configured correctly for Sonatype OSSRH."
+            exit 1
+          fi
+          # Check if GPG configuration exists (using extended regex for any passphrase content)
+          if ! grep -E "<passphrase>.+</passphrase>" ~/.m2/settings.xml; then
+            echo "settings.xml is not configured correctly for gpg-passphrase."
+            exit 1
+          fi
+          echo "settings.xml configuration validated successfully"
+
       - name: Cache Maven dependencies
         uses: actions/cache@v4
         with:
@@ -48,10 +67,12 @@ jobs:
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
         run: |
-          mvn clean deploy -Pdeploy \
-            -DskipTests=true \
-            -Dgpg.passphrase="${GPG_PASSPHRASE}"
+          mvn clean deploy -P deploy,release -DskipTests
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
