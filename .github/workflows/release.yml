@@ -39,6 +39,11 @@ jobs:
           echo -n "$GPG_SIGNING_KEY" | base64 --decode | gpg --import
           echo "GPG key imported successfully"
 
+      - name: Change Version
+        run: |
+          mvn versions:set -DnewVersion=${GITHUB_REF#refs/tags/} -DgenerateBackupPoms=false
+          echo "Version set to ${GITHUB_REF#refs/tags/}"
+
       - name: Build and Test
         run: mvn clean verify -Pci
 
