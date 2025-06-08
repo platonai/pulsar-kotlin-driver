@@ -28,6 +28,8 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
           cache: 'maven'
+          # Add this to use plain text passwords
+          settings-path: ${{ github.workspace }}
 
       - name: Test Sonatype login via API
         run: |
@@ -71,12 +73,8 @@ jobs:
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
         run: |
-          mvn clean deploy -P deploy,release -DskipTests
+          mvn clean deploy -P deploy,release -DskipTests -s ${{ github.workspace }}/settings.xml
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
