@@ -17,20 +17,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up JDK 11
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '11'
-          server-id: ossrh
-          server-username: ${{ secrets.SONATYPE_USERNAME }}
-          server-password: ${{ secrets.SONATYPE_PASSWORD }}
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
-          cache: 'maven'
-          # Add this to use plain text passwords
-          settings-path: ${{ github.workspace }}
-
       - name: Test Sonatype login via API
         run: |
           curl -u "${{ secrets.SONATYPE_USERNAME }}:${{ secrets.SONATYPE_PASSWORD }}" \
@@ -39,16 +25,16 @@ jobs:
       - name: Check settings.xml
         run: |
           # Will remove the sensitive information from the output
-          cat ${{ github.workspace }}/.m2/settings.xml
+          cat ~/.m2/settings.xml
           echo
           echo "Validating settings.xml configuration..."
           # Check if settings.xml is correctly configured (without exposing contents)
-          if ! grep -q "<id>ossrh</id>" ${{ github.workspace }}/.m2/settings.xml; then
+          if ! grep -q "<id>ossrh</id>" ~/.m2/settings.xml; then
             echo "settings.xml is not configured correctly for Sonatype OSSRH."
             exit 1
           fi
           # Check if GPG configuration exists (using extended regex for any passphrase content)
-          if ! grep -E "<passphrase>.+</passphrase>" ${{ github.workspace }}/.m2/settings.xml; then
+          if ! grep -E "<passphrase>.+</passphrase>" ~/.m2/settings.xml; then
             echo "settings.xml is not configured correctly for gpg-passphrase."
             exit 1
           fi
@@ -69,12 +55,24 @@ jobs:
       - name: Build and Test
         run: mvn clean verify -Pci
 
+      - name: Set up Apache Maven Central
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+          server-id: ossrh
+          server-username: SONATYPE_USERNAME
+          server-password: SONATYPE_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: GPG_PASSPHRASE
+
       - name: Deploy to Maven Central
-        env:
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          mvn clean deploy -P deploy,release -DskipTests -s ${{ github.workspace }}/settings.xml
+          mvn clean deploy -P deploy,release -DskipTests
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
