@@ -15,7 +15,7 @@ class DriverSettings(
     val server: String,
     val authToken: String,
     val port: Int = 8182,
-    val contextPath: String = "/api",
+    val contextPath: String = "/",
     val httpTimeout: Duration = Duration.ofMinutes(1),
 )
 
@@ -26,7 +26,7 @@ open class Driver(
     private val server: String,
     private val authToken: String,
     private val port: Int = 8182,
-    private val contextPath: String = "/api",
+    private val contextPath: String = "/",
     private val httpTimeout: Duration = Duration.ofMinutes(3),
 ) : AutoCloseable {
 
@@ -40,8 +40,8 @@ open class Driver(
 
     var timeout = Duration.ofSeconds(120)
 
-    private val contextPath0 = contextPath.removePrefix("/")
-    private val contextBase = "http://$server:$port/$contextPath0"
+    private val contextPath0 = contextPath.replace("/+".toRegex(), "").takeIf { it.isNotBlank() } ?: ""
+    private val contextBase = "http://$server:$port/$contextPath0".removeSuffix("/")
     val scrapeBaseUri = "$contextBase/x/a"
     val scrapeApi = "$scrapeBaseUri/q"
     val statusApi = "$scrapeBaseUri/status"
