@@ -1,55 +1,62 @@
-name: Release
+name: Release to Maven Central
 
 on:
   push:
     tags:
       - 'v*'
 
-permissions:
-  contents: write  # Required for creating releases
-
 jobs:
   release:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Set up build environment
-        uses: actions/setup-java@v4  # or setup-node@v4, setup-go@v4
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '11'
           distribution: 'temurin'
+          server-id: ossrh
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
 
-      - name: Build and test
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Configure GPG Key
+        env:
+          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          mvn clean package
-          mvn test
+          echo -n "$GPG_SIGNING_KEY" | base64 --decode | gpg --import
+          echo "GPG key imported successfully"
 
-      - name: Generate release notes
-        id: release_notes
+      - name: Build and Test
+        run: mvn clean verify -Pci
+
+      - name: Deploy to Maven Central
+        env:
+          MAVEN_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.SONATYPE_TOKEN }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          TAG_NAME=${GITHUB_REF#refs/tags/}
-          PREVIOUS_TAG=$(git describe --tags --abbrev=0 $TAG_NAME^ 2>/dev/null || echo "")
-          
-          if [ -n "$PREVIOUS_TAG" ]; then
-            git log --pretty=format:"- %s" $PREVIOUS_TAG..$TAG_NAME > release_notes.txt
-          else
-            echo "- Initial release" > release_notes.txt
-          fi
+          mvn clean deploy -Pdeploy \
+            -DskipTests=true \
+            -Dgpg.passphrase="${GPG_PASSPHRASE}"
 
-      - name: Create Release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          body_path: release_notes.txt
           files: |
             target/*.jar
-            dist/*.zip
-            *.tar.gz
-          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
