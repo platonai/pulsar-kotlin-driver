@@ -19,9 +19,6 @@ class DriverSettings(
     val httpTimeout: Duration = Duration.ofMinutes(1),
 )
 
-/**
- * The pulsar driver
- * */
 open class Driver(
     private val server: String,
     private val authToken: String,
