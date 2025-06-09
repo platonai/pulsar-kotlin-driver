@@ -69,7 +69,8 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: Build and Test
-        run: mvn clean verify -Pci
+#        run: mvn clean verify -Pci
+        run: mvn clean verify
 
       - name: Deploy to Maven Central
         run: |
