@@ -77,4 +77,4 @@ cd "$APP_HOME" || exit
 echo "Artifacts are staged remotely, you should close and release the staging manually:"
 echo "https://oss.sonatype.org/#stagingRepositories"
 echo "Hit the following link to check if the artifacts are synchronized to the maven center: "
-echo "https://repo1.maven.org/maven2/ai/platon/pulsar"
+echo "https://repo1.maven.org/maven2/ai/platon/pulsar/pulsar-kotlin-driver"
