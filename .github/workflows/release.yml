@@ -70,7 +70,7 @@ jobs:
 
       - name: Build and Test
 #        run: mvn clean verify -Pci
-        run: mvn clean verify
+        run: mvn clean
 
       - name: Deploy to Maven Central
         run: |

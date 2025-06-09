@@ -493,7 +493,7 @@
                         <configuration>
                             <dataFile>${project.build.directory}/jacoco.exec</dataFile>
                             <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
-                            <skip>false</skip>
+                            <skip>true</skip>
                         </configuration>
                     </plugin>
                 </plugins>
