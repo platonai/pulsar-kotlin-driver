@@ -70,8 +70,7 @@ jobs:
         run: |
           echo "Deploying to Maven Central..."
           # mvn clean deploy -P deploy,release -DskipTests
-          # ./bin/release/maven-deploy.sh
-          echo "Disabled temporary"
+          ./bin/release/maven-deploy.sh
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
